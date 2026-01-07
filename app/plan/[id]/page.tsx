@@ -52,56 +52,78 @@ type Plan = {
 }
 
 async function getPlan(id: string): Promise<Plan | null> {
-  const { data: plan, error } = await supabase
-    .from('plans')
-    .select(`
-      id,
-      name,
-      scheduled_date,
-      scheduled_time,
-      user_id,
-      created_at,
-      owner:profiles!plans_user_id_fkey (
-        first_name,
-        avatar_url
-      ),
-      places:plan_places (
-        position,
-        travel_time_from_prev,
-        travel_mode,
-        place:cached_places (
-          id,
-          name,
-          category,
-          neighborhood,
-          rating,
-          yelp_photo_url,
-          admin_photo_url,
-          address,
-          latitude,
-          longitude
-        )
-      ),
-      members:plan_members (
-        user_id,
-        status,
-        profile:profiles (
-          first_name,
-          avatar_url
-        )
-      )
-    `)
-    .eq('id', id)
-    .single()
+  try {
+    // First get the plan
+    const { data: plan, error: planError } = await supabase
+      .from('plans')
+      .select('id, name, scheduled_date, scheduled_time, user_id, created_at')
+      .eq('id', id)
+      .single()
 
-  if (error || !plan) {
+    if (planError || !plan) {
+      console.error('Plan fetch error:', planError)
+      return null
+    }
+
+    // Get owner profile
+    const { data: ownerProfile } = await supabase
+      .from('profiles')
+      .select('first_name, avatar_url')
+      .eq('id', plan.user_id)
+      .single()
+
+    // Get plan places
+    const { data: planPlaces } = await supabase
+      .from('plan_places')
+      .select('place_id, order_index')
+      .eq('plan_id', id)
+      .order('order_index')
+
+    let places: any[] = []
+    if (planPlaces && planPlaces.length > 0) {
+      const placeIds = planPlaces.map(pp => pp.place_id)
+      const { data: cachedPlaces } = await supabase
+        .from('cached_places')
+        .select('id, name, category, rating, yelp_photo_url, admin_photo_url, address, city, neighborhood, latitude, longitude')
+        .in('id', placeIds)
+
+      places = planPlaces.map((pp, index) => {
+        const place = cachedPlaces?.find(cp => cp.id === pp.place_id)
+        return { position: pp.order_index || index, place }
+      }).filter(p => p.place !== null)
+    }
+
+    // Get plan members
+    const { data: members } = await supabase
+      .from('plan_members')
+      .select('user_id, status')
+      .eq('plan_id', id)
+
+    let membersWithProfiles: any[] = []
+    if (members && members.length > 0) {
+      const memberIds = members.map(m => m.user_id)
+      const { data: memberProfiles } = await supabase
+        .from('profiles')
+        .select('id, first_name, avatar_url')
+        .in('id', memberIds)
+
+      membersWithProfiles = members.map(m => ({
+        user_id: m.user_id,
+        status: m.status,
+        profile: memberProfiles?.find(p => p.id === m.user_id) || { first_name: 'Unknown', avatar_url: null }
+      }))
+    }
+
+    return {
+      ...plan,
+      owner: ownerProfile || { first_name: 'Someone', avatar_url: null },
+      places,
+      members: membersWithProfiles
+    } as Plan
+  } catch (err) {
+    console.error('getPlan error:', err)
     return null
   }
-
-  // Sort places by position
-  plan.places = (plan.places || []).sort((a: any, b: any) => a.position - b.position)
-  
-  return plan as unknown as Plan
 }
 
 // Generate metadata for link previews (Open Graph)
@@ -114,7 +136,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     }
   }
 
-  const placeNames = plan.places.slice(0, 3).map(p => p.place.name).join(' → ')
+  const placeNames = plan.places.slice(0, 3).map(p => p.place?.name).filter(Boolean).join(' → ')
   const description = plan.scheduled_date 
     ? `${placeNames} • ${formatDate(plan.scheduled_date)}${plan.scheduled_time ? ` at ${plan.scheduled_time}` : ''}`
     : placeNames
@@ -150,7 +172,7 @@ function formatCategory(category: string): string {
 }
 
 function getPhotoUrl(place: PlanPlace['place']): string {
-  return place.admin_photo_url || place.yelp_photo_url || '/placeholder.svg'
+  return place?.admin_photo_url || place?.yelp_photo_url || '/placeholder.svg'
 }
 
 export default async function PlanPage({ params }: { params: { id: string } }) {
@@ -253,17 +275,7 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
             
             <div className="space-y-1">
               {plan.places.map((planPlace, index) => (
-                <div key={planPlace.place.id}>
-                  {/* Travel time connector */}
-                  {index > 0 && planPlace.travel_time_from_prev && (
-                    <div className="flex items-center gap-2 py-2 pl-4">
-                      <div className="w-0.5 h-4 bg-gray-200" />
-                      <span className="text-xs text-gray-400 flex items-center gap-1">
-                        🚶 {planPlace.travel_time_from_prev} min walk
-                      </span>
-                    </div>
-                  )}
-                  
+                <div key={planPlace.place?.id || index}>
                   {/* Place card */}
                   <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
                     <div className="relative">
@@ -272,19 +284,19 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
                       </span>
                       <img
                         src={getPhotoUrl(planPlace.place)}
-                        alt={planPlace.place.name}
+                        alt={planPlace.place?.name || 'Place'}
                         className="w-16 h-16 rounded-xl object-cover"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 truncate">
-                        {planPlace.place.name}
+                        {planPlace.place?.name}
                       </h3>
                       <p className="text-sm text-gray-500 truncate">
-                        {formatCategory(planPlace.place.category)}
-                        {planPlace.place.neighborhood && ` • ${planPlace.place.neighborhood}`}
+                        {formatCategory(planPlace.place?.category || '')}
+                        {planPlace.place?.neighborhood && ` • ${planPlace.place.neighborhood}`}
                       </p>
-                      {planPlace.place.rating > 0 && (
+                      {planPlace.place?.rating && planPlace.place.rating > 0 && (
                         <div className="flex items-center gap-1 mt-0.5">
                           <span className="text-yellow-500 text-xs">★</span>
                           <span className="text-xs text-gray-500">{planPlace.place.rating.toFixed(1)}</span>
@@ -307,7 +319,7 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
               date={plan.scheduled_date}
               time={plan.scheduled_time}
               location={firstPlace?.address || firstPlace?.name || ''}
-              places={plan.places.map(p => p.place.name)}
+              places={plan.places.map(p => p.place?.name).filter(Boolean) as string[]}
             />
           )}
 
