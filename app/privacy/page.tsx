@@ -1,26 +1,28 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+const BRAND_BLUE = '#4292fc';
+
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-4 border-b border-gray-100">
-        <Link href="/" className="flex items-center gap-2">
+      <nav className="flex items-center justify-between px-6 md:px-12 lg:px-20 py-4 border-b border-gray-100">
+        <Link href="/" className="flex items-center gap-3">
           <Image 
             src="/images/logo.png" 
             alt="Easy Meets" 
-            width={40} 
-            height={40}
-            className="w-10 h-10"
+            width={50} 
+            height={50}
+            className="w-12 h-12 md:w-14 md:h-14"
           />
-          <span className="text-xl font-bold">
-            <span className="text-[#3B9EFF]">Easy</span>
+          <span className="text-2xl font-bold">
+            <span style={{ color: BRAND_BLUE }}>Easy</span>
             <span className="text-gray-800"> Meets</span>
           </span>
         </Link>
         <div className="flex items-center gap-6">
-          <Link href="/about" className="text-gray-600 hover:text-gray-900 transition-colors">
+          <Link href="/about" className="text-gray-600 hover:text-gray-900 transition-colors font-medium">
             About us
           </Link>
         </div>
@@ -167,10 +169,10 @@ export default function PrivacyPage() {
       <footer className="bg-white border-t border-gray-100 py-8 px-6 md:px-12">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} All rights reserved by Easy Meets
+            © {new Date().getFullYear()} Easy Meets. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <Link href="/privacy" className="text-sm text-[#3B9EFF] font-medium">
+            <Link href="/privacy" className="text-sm font-medium" style={{ color: BRAND_BLUE }}>
               Privacy Policy
             </Link>
             <Link href="/terms" className="text-sm text-gray-500 hover:text-gray-700">
