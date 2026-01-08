@@ -54,9 +54,8 @@ type Plan = {
   members: PlanMember[]
 }
 
-// Calculate walking distance between two coordinates (Haversine formula)
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 3959 // Earth's radius in miles
+  const R = 3959
   const dLat = (lat2 - lat1) * Math.PI / 180
   const dLon = (lon2 - lon1) * Math.PI / 180
   const a = 
@@ -67,9 +66,8 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c
 }
 
-// Convert miles to walking time (average 3 mph walking speed)
 function getWalkingTime(miles: number): string {
-  const minutes = Math.round(miles * 20) // ~3 mph = 20 min per mile
+  const minutes = Math.round(miles * 20)
   if (minutes < 1) return '1 min walk'
   if (minutes === 1) return '1 min walk'
   return `${minutes} min walk`
@@ -206,40 +204,47 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* Top Download Banner */}
-      <div style={{ backgroundColor: BRAND_BLUE }} className="text-white py-3 px-4">
+      {/* Top Download Banner - MORE PROMINENT */}
+      <div style={{ backgroundColor: '#1a1a1a' }} className="text-white py-4 px-4">
         <div className="max-w-lg mx-auto flex items-center justify-between">
-          <span className="text-sm font-medium">✨ Create your own plans with Easy Meets</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xl">📲</span>
+            <span className="font-semibold">Get Easy Meets</span>
+          </div>
           <a 
             href="https://testflight.apple.com/join/ytNNM6QS"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-semibold bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition-colors"
+            className="font-bold px-5 py-2 rounded-full transition-colors text-sm"
+            style={{ backgroundColor: BRAND_BLUE }}
           >
-            Download
+            Download Free
           </a>
         </div>
       </div>
 
-      {/* Header */}
-      <header style={{ backgroundColor: BRAND_BLUE }} className="text-white pt-6 pb-20 px-6">
+      {/* Header - WHITE BACKGROUND so logo is visible */}
+      <header className="bg-white pt-6 pb-8 px-6 border-b border-gray-100">
         <div className="max-w-lg mx-auto">
-          <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="flex items-center justify-center gap-3">
             <Image 
               src="/images/logo.png" 
               alt="Easy Meets" 
-              width={40} 
-              height={40}
-              className="w-10 h-10"
+              width={56} 
+              height={56}
+              className="w-14 h-14"
             />
-            <span className="text-xl font-bold">Easy Meets</span>
+            <span className="text-2xl font-bold">
+              <span style={{ color: BRAND_BLUE }}>Easy</span>
+              <span className="text-gray-800"> Meets</span>
+            </span>
           </div>
         </div>
       </header>
 
       {/* Plan Card */}
-      <div className="max-w-lg mx-auto px-4 -mt-14">
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+      <div className="max-w-lg mx-auto px-4 py-6">
+        <div className="bg-white rounded-3xl shadow-lg overflow-hidden">
           {/* Plan Info */}
           <div className="p-6 pb-4">
             <h1 className="text-2xl font-bold text-gray-900 mb-3">{plan.name}</h1>
@@ -317,7 +322,6 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
             
             <div className="space-y-1">
               {plan.places.map((planPlace, index) => {
-                // Calculate walking distance from previous place
                 let walkingTime: string | null = null
                 if (index > 0) {
                   const prevPlace = plan.places[index - 1].place
@@ -387,7 +391,7 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
 
         {/* Action Buttons */}
         <div className="mt-6 space-y-3">
-          {/* Add to Calendar */}
+          {/* Add to Calendar - NOW SHOWS DATE */}
           {plan.scheduled_date && (
             <CalendarButtons 
               planName={plan.name}
@@ -402,10 +406,16 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
           <ActionButtons planId={plan.id} />
         </div>
 
-        {/* CTA Card */}
+        {/* CTA Card - EASY MEETS LOGO instead of map emoji */}
         <div className="mt-8 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="text-center">
-            <div className="text-3xl mb-3">🗺️</div>
+            <Image 
+              src="/images/logo.png" 
+              alt="Easy Meets" 
+              width={64} 
+              height={64}
+              className="w-16 h-16 mx-auto mb-4"
+            />
             <h3 className="text-lg font-bold text-gray-900 mb-2">
               Want to create your own plans?
             </h3>
@@ -451,17 +461,20 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
           </a>
         </div>
 
-        {/* Footer */}
+        {/* Footer - BIGGER LOGO, not stretched */}
         <footer className="mt-8 pb-8 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="flex items-center justify-center gap-3 mb-2">
             <Image 
               src="/images/logo.png" 
               alt="Easy Meets" 
-              width={24} 
-              height={24}
-              className="w-6 h-6"
+              width={40} 
+              height={40}
+              className="w-10 h-10"
             />
-            <span className="font-semibold text-gray-700">Easy Meets</span>
+            <span className="text-xl font-bold">
+              <span style={{ color: BRAND_BLUE }}>Easy</span>
+              <span className="text-gray-800"> Meets</span>
+            </span>
           </div>
           <p className="text-sm text-gray-500">
             Plan hangouts effortlessly with friends

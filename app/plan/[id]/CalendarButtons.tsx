@@ -37,6 +37,13 @@ export default function CalendarButtons({ planName, date, time, location, places
   const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000)
   const description = `Easy Meets plan: ${places.join(' → ')}`
 
+  // Format display date
+  const displayDate = startDate.toLocaleDateString('en-US', { 
+    weekday: 'short', 
+    month: 'short', 
+    day: 'numeric' 
+  })
+
   const formatGoogleDate = (d: Date) => {
     return d.toISOString().replace(/-|:|\.\d{3}/g, '').slice(0, -1)
   }
@@ -85,13 +92,28 @@ END:VCALENDAR`
     <div className="relative">
       <button
         onClick={() => setShowOptions(!showOptions)}
-        className="w-full flex items-center justify-center gap-2 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-semibold py-4 px-6 rounded-2xl transition-colors"
-        style={{ '--hover-border': BRAND_BLUE } as React.CSSProperties}
+        className="w-full flex items-center justify-between bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-semibold py-4 px-5 rounded-2xl transition-colors"
       >
-        <span>📅</span>
-        <span>Add to Calendar</span>
+        <div className="flex items-center gap-3">
+          {/* Calendar icon with date */}
+          <div 
+            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-white"
+            style={{ backgroundColor: BRAND_BLUE }}
+          >
+            <span className="text-[10px] font-bold uppercase leading-none">
+              {startDate.toLocaleDateString('en-US', { month: 'short' })}
+            </span>
+            <span className="text-lg font-bold leading-none">
+              {startDate.getDate()}
+            </span>
+          </div>
+          <div className="text-left">
+            <div className="font-semibold text-gray-900">Add to Calendar</div>
+            <div className="text-sm text-gray-500">{displayDate}{time ? ` • ${time}` : ''}</div>
+          </div>
+        </div>
         <svg 
-          className={`w-4 h-4 transition-transform ${showOptions ? 'rotate-180' : ''}`} 
+          className={`w-5 h-5 text-gray-400 transition-transform ${showOptions ? 'rotate-180' : ''}`} 
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -110,13 +132,9 @@ END:VCALENDAR`
             }}
             className="w-full flex items-center gap-3 px-5 py-4 hover:bg-gray-50 transition-colors text-left"
           >
-            <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-6 h-6">
-                <rect x="3" y="4" width="18" height="18" rx="2" fill="#FF3B30"/>
-                <rect x="3" y="4" width="18" height="5" fill="#FF6259"/>
-                <text x="12" y="17" textAnchor="middle" fill="white" fontSize="8" fontWeight="bold">
-                  {new Date(date).getDate()}
-                </text>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-400 to-red-500 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" className="w-6 h-6 text-white" fill="currentColor">
+                <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/>
               </svg>
             </div>
             <div>
