@@ -3,27 +3,61 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
 const BRAND_BLUE = '#4292fc';
+
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function HomePage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleWaitlist = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
     
+    // If empty email, show red border
+    if (!email || !email.trim()) {
+      setError(true);
+      return;
+    }
+    
+    setError(false);
     setLoading(true);
+    
     try {
-      // TODO: Connect to Supabase waitlist table
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Save to Supabase waitlist table
+      const { error: insertError } = await supabase
+        .from('waitlist')
+        .insert([{ email: email.trim().toLowerCase() }]);
+      
+      if (insertError) {
+        // If duplicate email, still show success (they're already on the list)
+        if (insertError.code === '23505') {
+          setSubmitted(true);
+          setEmail('');
+        } else {
+          console.error('Error:', insertError);
+          // Still show success to user for better UX
+          setSubmitted(true);
+          setEmail('');
+        }
+      } else {
+        setSubmitted(true);
+        setEmail('');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      // Show success anyway for better UX
       setSubmitted(true);
       setEmail('');
-    } catch (error) {
-      console.error('Error:', error);
     }
+    
     setLoading(false);
   };
 
@@ -35,11 +69,11 @@ export default function HomePage() {
           <Image 
             src="/images/logo.png" 
             alt="Easy Meets" 
-            width={50} 
-            height={50}
-            className="w-12 h-12 md:w-14 md:h-14"
+            width={60} 
+            height={60}
+            className="w-14 h-14 md:w-16 md:h-16"
           />
-          <span className="text-2xl font-bold">
+          <span className="text-2xl md:text-3xl font-bold">
             <span style={{ color: BRAND_BLUE }}>Easy</span>
             <span className="text-gray-800"> Meets</span>
           </span>
@@ -71,7 +105,7 @@ export default function HomePage() {
                 style={{ backgroundColor: `${BRAND_BLUE}15`, color: BRAND_BLUE }}
               >
                 <span>🚀</span>
-                <span>Launching this Friday on App Store</span>
+                <span>Launching Soon</span>
               </div>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
@@ -98,10 +132,14 @@ export default function HomePage() {
                     type="email"
                     placeholder="Enter your email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="flex-1 px-5 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:border-transparent text-lg"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (error) setError(false);
+                    }}
+                    className={`flex-1 px-5 py-4 rounded-xl border-2 focus:outline-none focus:ring-2 focus:border-transparent text-lg transition-colors ${
+                      error ? 'border-red-500' : 'border-gray-200'
+                    }`}
                     style={{ '--tw-ring-color': BRAND_BLUE } as React.CSSProperties}
-                    required
                   />
                   <button
                     type="submit"
@@ -113,24 +151,6 @@ export default function HomePage() {
                   </button>
                 </form>
               )}
-              
-              {/* Social Proof */}
-              <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div 
-                      key={i} 
-                      className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold"
-                      style={{ backgroundColor: BRAND_BLUE, opacity: 1 - (i * 0.15) }}
-                    >
-                      {String.fromCharCode(64 + i)}
-                    </div>
-                  ))}
-                </div>
-                <p className="text-gray-600">
-                  <span className="font-bold text-gray-900">400+</span> users already exploring
-                </p>
-              </div>
             </div>
 
             {/* Right - Phone Mockups */}
@@ -169,11 +189,11 @@ export default function HomePage() {
                 
                 {/* Decorative elements */}
                 <div 
-                  className="absolute -z-10 w-72 h-72 rounded-full blur-3xl opacity-30 -top-10 -right-10"
+                  className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full opacity-20 blur-2xl"
                   style={{ backgroundColor: BRAND_BLUE }}
                 />
                 <div 
-                  className="absolute -z-10 w-72 h-72 rounded-full blur-3xl opacity-20 -bottom-10 -left-10"
+                  className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-20 blur-2xl"
                   style={{ backgroundColor: BRAND_BLUE }}
                 />
               </div>
@@ -182,108 +202,84 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 border-y border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <StatItem number="400+" label="Active Users" />
-            <StatItem number="2,500+" label="Places Curated" />
-            <StatItem number="50+" label="NYC Neighborhoods" />
-            <StatItem number="4.8★" label="User Rating" />
-          </div>
-        </div>
-      </section>
-
       {/* Why Easy Meets Section */}
-      <section className="py-20 md:py-28 px-6 md:px-12">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-20 md:py-28 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Why use Easy Meets?
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               We solve the headaches of planning so you can focus on making memories
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-8">
-            <FeatureCard
-              emoji="🥹"
-              title="Multi-person planning made easy"
-              description="Find places everyone in your group will love based on shared interests. No more endless group chat debates."
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <FeatureCard 
+              emoji="🗺️"
+              title="Discover Together"
+              description="Swipe through curated places and see what your friends love too. No more guessing games."
             />
-            <FeatureCard
-              emoji="🔍"
-              title="Eliminates endless searching"
-              description="No more scrolling through social media or review sites. We curate the best spots so you don't have to."
-            />
-            <FeatureCard
+            <FeatureCard 
               emoji="⚡"
-              title="Instant last-minute plans"
-              description="Get personalized recommendations based on your interests and location in seconds."
+              title="Plan in Seconds"
+              description="Turn liked places into actual plans with just a few taps. We handle the logistics."
             />
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-3xl mx-auto">
-            <FeatureCard
-              emoji="🌍"
-              title="Local gems & travel spots"
-              description="Discover hidden gems in your city or plan adventures abroad with insider recommendations."
+            <FeatureCard 
+              emoji="👥"
+              title="Find Common Ground"
+              description="Instantly see places you and your friends both want to visit. Perfect for group decisions."
             />
-            <FeatureCard
-              emoji="🧠"
-              title="Smart time optimization"
-              description="Our routing helps you make the most of every hangout by suggesting nearby activities."
+            <FeatureCard 
+              emoji="📍"
+              title="Local & Travel Ready"
+              description="Works for your neighborhood hangout or exploring new cities abroad."
+            />
+            <FeatureCard 
+              emoji="🔔"
+              title="Stay in Sync"
+              description="Get notified when friends are free or invite you to plans. Never miss out."
+            />
+            <FeatureCard 
+              emoji="💰"
+              title="Budget Friendly"
+              description="Filter by price range so everyone can enjoy without breaking the bank."
             />
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 md:py-28 px-6 md:px-12" style={{ backgroundColor: '#F8FAFC' }}>
-        <div className="max-w-6xl mx-auto">
+      <section className="py-20 md:py-28">
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              How it works
+              How It Works
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Three simple steps to your perfect hangout
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Three simple steps to your next hangout
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-12 lg:gap-16">
-            <HowItWorksStep
+          <div className="grid md:grid-cols-3 gap-12 md:gap-8">
+            <HowItWorksStep 
               step="1"
-              title="Explore & Save"
-              description="Swipe through curated places and save your favorites. Build your personal collection of spots you want to try."
+              title="Discover Places"
+              description="Swipe through restaurants, cafes, activities, and more. Like what catches your eye."
               image="/images/mockup1.jpg"
             />
-            <HowItWorksStep
+            <HowItWorksStep 
               step="2"
-              title="Find Common Ground"
-              description="Connect with friends and instantly see places you both love. No more guessing what everyone wants."
+              title="Find Common Interests"
+              description="See places you and your friends both liked. Perfect matches for group outings."
               image="/images/mockup3.png"
             />
-            <HowItWorksStep
+            <HowItWorksStep 
               step="3"
-              title="Plan & Go"
-              description="Create a plan with nearby places, share it with your group, and make it happen."
+              title="Create Your Plan"
+              description="Pick your spots, set a date, and invite friends. We'll handle the rest."
               image="/images/mockup2.png"
             />
-          </div>
-        </div>
-      </section>
-
-      {/* Awards Section */}
-      <section className="py-16 md:py-20 px-6 md:px-12">
-        <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-8">
-            Recognized & Supported By
-          </h3>
-          <div className="flex flex-wrap justify-center gap-4 md:gap-8">
-            <AwardBadge icon="🚀" title="CUNY Startups" subtitle="Accelerator" />
-            <AwardBadge icon="🎓" title="Founder Fellowship" subtitle="Selected Fellow" />
-            <AwardBadge icon="🌍" title="Global Venture" subtitle="Founders Program" />
           </div>
         </div>
       </section>
@@ -298,7 +294,7 @@ export default function HomePage() {
             Ready to simplify your hangouts?
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join 400+ users who are already planning smarter. Be the first to know when we launch on the App Store.
+            Join our waitlist and be the first to know when we launch on the App Store.
           </p>
           
           {submitted ? (
@@ -311,9 +307,13 @@ export default function HomePage() {
                 type="email"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-5 py-4 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white text-lg"
-                required
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError(false);
+                }}
+                className={`flex-1 px-5 py-4 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-white text-lg ${
+                  error ? 'border-red-500' : 'border-transparent'
+                }`}
               />
               <button
                 type="submit"
@@ -337,8 +337,9 @@ export default function HomePage() {
                 <Image 
                   src="/images/logo.png" 
                   alt="Easy Meets" 
-                  width={40} 
-                  height={40}
+                  width={48} 
+                  height={48}
+                  className="w-12 h-12"
                 />
                 <span className="text-xl font-bold">
                   <span style={{ color: BRAND_BLUE }}>Easy</span>
@@ -406,15 +407,6 @@ export default function HomePage() {
   );
 }
 
-function StatItem({ number, label }: { number: string; label: string }) {
-  return (
-    <div className="text-center">
-      <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">{number}</div>
-      <div className="text-gray-600 text-sm">{label}</div>
-    </div>
-  );
-}
-
 function FeatureCard({ emoji, title, description }: { emoji: string; title: string; description: string }) {
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-6 lg:p-8 hover:shadow-xl hover:border-gray-200 transition-all duration-300 hover:-translate-y-1">
@@ -445,18 +437,6 @@ function HowItWorksStep({ step, title, description, image }: { step: string; tit
       </div>
       <h3 className="text-xl font-semibold text-gray-900 mb-3">{title}</h3>
       <p className="text-gray-600 max-w-xs mx-auto">{description}</p>
-    </div>
-  );
-}
-
-function AwardBadge({ icon, title, subtitle }: { icon: string; title: string; subtitle: string }) {
-  return (
-    <div className="flex items-center gap-3 px-5 py-3 bg-gray-50 rounded-xl border border-gray-100">
-      <span className="text-2xl">{icon}</span>
-      <div className="text-left">
-        <div className="font-semibold text-gray-900 text-sm">{title}</div>
-        <div className="text-xs text-gray-500">{subtitle}</div>
-      </div>
     </div>
   );
 }
