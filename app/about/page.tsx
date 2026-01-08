@@ -12,11 +12,11 @@ export default function AboutPage() {
           <Image 
             src="/images/logo.png" 
             alt="Easy Meets" 
-            width={50} 
-            height={50}
-            className="w-12 h-12 md:w-14 md:h-14"
+            width={60} 
+            height={60}
+            className="w-14 h-14 md:w-16 md:h-16"
           />
-          <span className="text-2xl font-bold">
+          <span className="text-2xl md:text-3xl font-bold">
             <span style={{ color: BRAND_BLUE }}>Easy</span>
             <span className="text-gray-800"> Meets</span>
           </span>
@@ -45,33 +45,28 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission Image */}
-      <section className="max-w-5xl mx-auto px-6 md:px-12 -mt-8">
-        <div className="rounded-3xl overflow-hidden shadow-2xl">
-          <Image
-            src="/images/mockup2.png"
-            alt="Easy Meets App"
-            width={1000}
-            height={500}
-            className="w-full h-64 md:h-96 object-cover"
-          />
-        </div>
-      </section>
-
       {/* Our Story */}
       <section className="max-w-4xl mx-auto px-6 md:px-12 py-20">
         <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Our Story</h2>
         <div className="prose prose-lg max-w-none">
           <p className="text-gray-600 text-lg leading-relaxed mb-6">
-            We are a team of City University of New York (CUNY) students united by personal frustrations, including conflicting interests, varying budgets, and the time-consuming task of planning a hangout and finding suitable nearby activities. Additionally, the surge of social media exacerbates this issue, leading to an overwhelming amount of scrolling, scattered information, and increased expenses. This challenge isn&apos;t limited to local experiences; it also affects travelers who often miss out on fantastic opportunities.
+            Today there is a huge gap between outings that involve more than one person and the tools to plan them. Customer surveys show that 70% of young people struggle with making plans with friends and maintaining a work-life balance, forcing many to forfeit their social life.
           </p>
           
           <p className="text-gray-600 text-lg leading-relaxed mb-6">
-            To address these issues, we created <span style={{ color: BRAND_BLUE }} className="font-semibold">Easy Meets</span>. Easy Meets simplifies the process, making it a breeze to plan individual or group hangouts. Let us handle the logistics while you focus on having fun. With us, every outing is stress-free and memorable.
+            We recognize CUNY&apos;s vast commuter population, which forces students to put their social life as their last priority. We&apos;ve lived it, and we&apos;ve seen countless other young adults going through the same issues. The pain isn&apos;t just in the long hours or the packed schedules—it&apos;s in the planning process. The endless back-and-forths, the approval headaches, and the never-ending cycle of canceled plans because the whole process is just too inefficient.
+          </p>
+          
+          <p className="text-gray-600 text-lg leading-relaxed mb-6">
+            <span style={{ color: BRAND_BLUE }} className="font-semibold">Easy Meets</span> is born out of these same struggles. We&apos;ve felt that sting of putting our social lives on the back burner, and seeing our friends less and less as we navigate this novel adult life. It doesn&apos;t get any easier when we step into the workforce.
+          </p>
+
+          <p className="text-gray-600 text-lg leading-relaxed mb-6">
+            With endless choices and logistical challenges to plan, Easy Meets streamlines the process, transforming it into a fun and hassle-free experience. No more missed opportunities, no more canceled trips, no more trips to the same spot—it&apos;s time to take control of your social life.
           </p>
           
           <p className="text-gray-600 text-lg leading-relaxed">
-            Our technology ensures that organizing a trip with multiple individuals is smooth and efficient. Say goodbye to the hassle – Easy Meets has got you covered. From the business perspective, Easy Meets provides access to numerous tools and analytics to maximize profit.
+            Easy Meets is a marketplace that simplifies planning hangouts and trips for users and provides businesses with valuable information about potential customers who have expressed interest in their business. Let Easy Meets be your partner in making every meet-up affordable, enjoyable, and, most importantly, hassle-free.
           </p>
         </div>
       </section>
@@ -80,25 +75,31 @@ export default function AboutPage() {
       <section className="bg-gray-50 py-20">
         <div className="max-w-4xl mx-auto px-6 md:px-12">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Meet the Team
+            Meet the Founder
           </h2>
           
           <div className="flex justify-center">
-            <div className="text-center">
-              <div className="w-48 h-48 mx-auto rounded-full overflow-hidden shadow-xl mb-6 ring-4 ring-white">
-                <Image
-                  src="/images/founder.jpg"
-                  alt="Marwh Nabil"
-                  width={192}
-                  height={192}
-                  className="w-full h-full object-cover"
-                />
+            <div className="max-w-2xl">
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+                <div className="flex-shrink-0">
+                  <div className="w-48 h-48 rounded-full overflow-hidden shadow-xl ring-4 ring-white">
+                    <Image
+                      src="/images/founder.jpg"
+                      alt="Marwh Nabil"
+                      width={192}
+                      height={192}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+                <div className="text-center md:text-left">
+                  <h3 className="text-2xl font-bold text-gray-900">Marwh Nabil</h3>
+                  <p style={{ color: BRAND_BLUE }} className="font-medium text-lg mb-4">Founder</p>
+                  <p className="text-gray-600 leading-relaxed">
+                    &ldquo;My passion for accessible tourism and belief in simplifying information inspired me to build Easy Meets. What began as a travel solution quickly grew into a platform for both travelers and locals, after realizing how much time is lost to overwhelming, scattered planning. Easy Meets helps people spend less time organizing and more time experiencing, while giving small businesses a simple way to connect with the right customers and stay top of mind in a fast-paced, digital world.&rdquo;
+                  </p>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900">Marwh Nabil</h3>
-              <p style={{ color: BRAND_BLUE }} className="font-medium text-lg">Founder</p>
-              <p className="text-gray-600 mt-2 max-w-xs mx-auto">
-                CUNY College of Staten Island graduate passionate about solving real-world problems through technology.
-              </p>
             </div>
           </div>
         </div>
@@ -118,14 +119,14 @@ export default function AboutPage() {
               <p className="text-gray-600 mt-1">New Venture Accelerator 1 & 2</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-shadow">
-              <div className="text-4xl mb-4">🎓</div>
-              <h3 className="font-bold text-gray-900 text-lg">Founder Fellowship</h3>
-              <p className="text-gray-600 mt-1">Selected Fellow</p>
+              <div className="text-4xl mb-4">🏆</div>
+              <h3 className="font-bold text-gray-900 text-lg">Standard Chartered</h3>
+              <p className="text-gray-600 mt-1">Women+Tech Prize Winner</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg transition-shadow">
-              <div className="text-4xl mb-4">🌍</div>
-              <h3 className="font-bold text-gray-900 text-lg">Global Venture Founders</h3>
-              <p className="text-gray-600 mt-1">Program Member</p>
+              <div className="text-4xl mb-4">🎓</div>
+              <h3 className="font-bold text-gray-900 text-lg">Blackstone LaunchPad</h3>
+              <p className="text-gray-600 mt-1">Selected Fellow</p>
             </div>
           </div>
         </div>
