@@ -192,31 +192,6 @@ function getPhotoUrl(place: PlanPlace['place']): string {
   return place?.admin_photo_url || place?.yelp_photo_url || '/placeholder.svg'
 }
 
-// SVG Logo component - clean and crisp
-function EasyMeetsLogo({ size = 40, className = '' }: { size?: number; className?: string }) {
-  return (
-    <svg 
-      width={size} 
-      height={size} 
-      viewBox="0 0 100 100" 
-      className={className}
-      fill="none"
-    >
-      {/* Stylized 'e' with location pin */}
-      <circle cx="50" cy="50" r="45" fill={BRAND_BLUE} opacity="0.1"/>
-      <path 
-        d="M30 50c0-15 12-27 27-27s27 12 27 27c0 20-27 40-27 40S30 70 30 50z" 
-        fill={BRAND_BLUE}
-      />
-      <circle cx="57" cy="47" r="12" fill="white"/>
-      <path 
-        d="M52 42c-4 0-7 3-7 7s3 7 7 7c2 0 4-1 5-2l3 3c-2 2-5 3-8 3-6 0-11-5-11-11s5-11 11-11c3 0 6 1 8 3l-3 3c-1-1-3-2-5-2z" 
-        fill={BRAND_BLUE}
-      />
-    </svg>
-  )
-}
-
 export default async function PlanPage({ params }: { params: { id: string } }) {
   const plan = await getPlan(params.id)
 
@@ -252,7 +227,16 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
       <header className="bg-white py-5 px-6 shadow-sm">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-center gap-3">
-            <EasyMeetsLogo size={44} />
+            {/* Logo - using object-contain to prevent stretching */}
+            <div className="w-11 h-11 relative flex-shrink-0">
+              <Image 
+                src="/images/logo.png" 
+                alt="Easy Meets" 
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
             <span className="text-2xl font-bold">
               <span style={{ color: BRAND_BLUE }}>Easy</span>
               <span className="text-gray-800"> Meets</span>
@@ -264,7 +248,7 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
       {/* Blue Background Section */}
       <div style={{ backgroundColor: BRAND_BLUE }} className="pt-6 pb-12">
         <div className="max-w-lg mx-auto px-4">
-          {/* Plan Card - overlapping into blue section */}
+          {/* Plan Card */}
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
             {/* Plan Info */}
             <div className="p-6 pb-4">
@@ -413,7 +397,7 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
       </div>
 
       {/* Rest of page - Light blue background */}
-      <div className="max-w-lg mx-auto px-4 py-6" style={{ backgroundColor: '#f0f7ff' }}>
+      <div className="max-w-lg mx-auto px-4 py-6">
         {/* Action Buttons */}
         <div className="space-y-3">
           {/* Add to Calendar */}
@@ -434,7 +418,15 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
         {/* CTA Card */}
         <div className="mt-8 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="text-center">
-            <EasyMeetsLogo size={56} className="mx-auto mb-4" />
+            {/* Logo - properly sized */}
+            <div className="w-16 h-16 relative mx-auto mb-4">
+              <Image 
+                src="/images/logo.png" 
+                alt="Easy Meets" 
+                fill
+                className="object-contain"
+              />
+            </div>
             <h3 className="text-lg font-bold text-gray-900 mb-2">
               Want to create your own plans?
             </h3>
@@ -483,7 +475,15 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
         {/* Footer */}
         <footer className="mt-8 pb-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <EasyMeetsLogo size={32} />
+            {/* Footer logo - properly sized */}
+            <div className="w-8 h-8 relative flex-shrink-0">
+              <Image 
+                src="/images/logo.png" 
+                alt="Easy Meets" 
+                fill
+                className="object-contain"
+              />
+            </div>
             <span className="text-lg font-bold">
               <span style={{ color: BRAND_BLUE }}>Easy</span>
               <span className="text-gray-800"> Meets</span>
