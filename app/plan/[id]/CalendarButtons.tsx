@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+const BRAND_BLUE = '#4292fc'
+
 type CalendarButtonsProps = {
   planName: string
   date: string
@@ -16,7 +18,6 @@ export default function CalendarButtons({ planName, date, time, location, places
   // Parse date and time
   const startDate = new Date(date + 'T00:00:00')
   
-  // If time provided, parse it (e.g., "2pm", "2:00 PM", "14:00")
   if (time) {
     const timeMatch = time.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i)
     if (timeMatch) {
@@ -30,20 +31,16 @@ export default function CalendarButtons({ planName, date, time, location, places
       startDate.setHours(hours, minutes, 0, 0)
     }
   } else {
-    startDate.setHours(12, 0, 0, 0) // Default to noon
+    startDate.setHours(12, 0, 0, 0)
   }
 
-  // End time: 2 hours after start
   const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000)
-
   const description = `Easy Meets plan: ${places.join(' → ')}`
 
-  // Format for Google Calendar URL
   const formatGoogleDate = (d: Date) => {
     return d.toISOString().replace(/-|:|\.\d{3}/g, '').slice(0, -1)
   }
 
-  // Generate Google Calendar URL
   const googleCalendarUrl = (() => {
     const params = new URLSearchParams({
       action: 'TEMPLATE',
@@ -55,7 +52,6 @@ export default function CalendarButtons({ planName, date, time, location, places
     return `https://calendar.google.com/calendar/render?${params.toString()}`
   })()
 
-  // Generate ICS file content for Apple Calendar
   const generateICS = () => {
     const formatICSDate = (d: Date) => {
       return d.toISOString().replace(/-|:|\.\d{3}/g, '').slice(0, -1) + 'Z'
@@ -89,7 +85,8 @@ END:VCALENDAR`
     <div className="relative">
       <button
         onClick={() => setShowOptions(!showOptions)}
-        className="w-full flex items-center justify-center gap-2 bg-white border-2 border-gray-200 hover:border-easy-blue text-gray-700 font-semibold py-4 px-6 rounded-2xl transition-colors"
+        className="w-full flex items-center justify-center gap-2 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-semibold py-4 px-6 rounded-2xl transition-colors"
+        style={{ '--hover-border': BRAND_BLUE } as React.CSSProperties}
       >
         <span>📅</span>
         <span>Add to Calendar</span>
@@ -113,8 +110,14 @@ END:VCALENDAR`
             }}
             className="w-full flex items-center gap-3 px-5 py-4 hover:bg-gray-50 transition-colors text-left"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-400 to-red-500 flex items-center justify-center text-white text-lg">
-              📆
+            <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" className="w-6 h-6">
+                <rect x="3" y="4" width="18" height="18" rx="2" fill="#FF3B30"/>
+                <rect x="3" y="4" width="18" height="5" fill="#FF6259"/>
+                <text x="12" y="17" textAnchor="middle" fill="white" fontSize="8" fontWeight="bold">
+                  {new Date(date).getDate()}
+                </text>
+              </svg>
             </div>
             <div>
               <div className="font-semibold text-gray-900">Apple Calendar</div>

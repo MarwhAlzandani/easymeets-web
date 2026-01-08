@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import Image from 'next/image'
 import CalendarButtons from './CalendarButtons'
 import ActionButtons from './ActionButtons'
 
@@ -8,6 +9,8 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
+
+const BRAND_BLUE = '#4292fc'
 
 type PlanPlace = {
   position: number
@@ -51,9 +54,29 @@ type Plan = {
   members: PlanMember[]
 }
 
+// Calculate walking distance between two coordinates (Haversine formula)
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 3959 // Earth's radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLon = (lon2 - lon1) * Math.PI / 180
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+  return R * c
+}
+
+// Convert miles to walking time (average 3 mph walking speed)
+function getWalkingTime(miles: number): string {
+  const minutes = Math.round(miles * 20) // ~3 mph = 20 min per mile
+  if (minutes < 1) return '1 min walk'
+  if (minutes === 1) return '1 min walk'
+  return `${minutes} min walk`
+}
+
 async function getPlan(id: string): Promise<Plan | null> {
   try {
-    // First get the plan
     const { data: plan, error: planError } = await supabase
       .from('plans')
       .select('id, name, scheduled_date, scheduled_time, user_id, created_at')
@@ -65,14 +88,12 @@ async function getPlan(id: string): Promise<Plan | null> {
       return null
     }
 
-    // Get owner profile
     const { data: ownerProfile } = await supabase
       .from('profiles')
       .select('first_name, avatar_url')
       .eq('id', plan.user_id)
       .single()
 
-    // Get plan places
     const { data: planPlaces } = await supabase
       .from('plan_places')
       .select('place_id, order_index')
@@ -93,7 +114,6 @@ async function getPlan(id: string): Promise<Plan | null> {
       }).filter(p => p.place !== null)
     }
 
-    // Get plan members
     const { data: members } = await supabase
       .from('plan_members')
       .select('user_id, status')
@@ -126,7 +146,6 @@ async function getPlan(id: string): Promise<Plan | null> {
   }
 }
 
-// Generate metadata for link previews (Open Graph)
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const plan = await getPlan(params.id)
   
@@ -186,18 +205,39 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
   const firstPlace = plan.places[0]?.place
 
   return (
-    <main className="min-h-screen pb-8">
+    <main className="min-h-screen bg-gray-50">
+      {/* Top Download Banner */}
+      <div style={{ backgroundColor: BRAND_BLUE }} className="text-white py-3 px-4">
+        <div className="max-w-lg mx-auto flex items-center justify-between">
+          <span className="text-sm font-medium">✨ Create your own plans with Easy Meets</span>
+          <a 
+            href="https://testflight.apple.com/join/ytNNM6QS"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-semibold bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition-colors"
+          >
+            Download
+          </a>
+        </div>
+      </div>
+
       {/* Header */}
-      <header className="bg-gradient-to-br from-easy-blue to-blue-400 text-white pt-12 pb-20 px-6">
+      <header style={{ backgroundColor: BRAND_BLUE }} className="text-white pt-6 pb-20 px-6">
         <div className="max-w-lg mx-auto">
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <span className="text-2xl">🗺️</span>
-            <span className="text-xl font-semibold">Easy Meets</span>
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <Image 
+              src="/images/logo.png" 
+              alt="Easy Meets" 
+              width={40} 
+              height={40}
+              className="w-10 h-10"
+            />
+            <span className="text-xl font-bold">Easy Meets</span>
           </div>
         </div>
       </header>
 
-      {/* Plan Card - Overlapping header */}
+      {/* Plan Card */}
       <div className="max-w-lg mx-auto px-4 -mt-14">
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
           {/* Plan Info */}
@@ -205,7 +245,6 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
             <h1 className="text-2xl font-bold text-gray-900 mb-3">{plan.name}</h1>
             
             <div className="flex items-center gap-3 mb-4">
-              {/* Owner avatar */}
               <div className="flex items-center gap-2">
                 {plan.owner.avatar_url ? (
                   <img 
@@ -214,7 +253,10 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
                     className="w-8 h-8 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-easy-blue flex items-center justify-center text-white text-sm font-semibold">
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                    style={{ backgroundColor: BRAND_BLUE }}
+                  >
                     {plan.owner.first_name?.[0]?.toUpperCase()}
                   </div>
                 )}
@@ -239,7 +281,7 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
             {acceptedMembers.length > 0 && (
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-2">
-                  {acceptedMembers.slice(0, 4).map((member, i) => (
+                  {acceptedMembers.slice(0, 4).map((member) => (
                     member.profile.avatar_url ? (
                       <img 
                         key={member.user_id}
@@ -267,45 +309,78 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
           {/* Divider */}
           <div className="border-t border-gray-100 mx-6" />
 
-          {/* Places List */}
+          {/* Places List with Walking Distance */}
           <div className="p-6 pt-4">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
               The Plan
             </h2>
             
             <div className="space-y-1">
-              {plan.places.map((planPlace, index) => (
-                <div key={planPlace.place?.id || index}>
-                  {/* Place card */}
-                  <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
-                    <div className="relative">
-                      <span className="absolute -left-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-easy-blue text-white text-xs flex items-center justify-center font-semibold">
-                        {index + 1}
-                      </span>
-                      <img
-                        src={getPhotoUrl(planPlace.place)}
-                        alt={planPlace.place?.name || 'Place'}
-                        className="w-16 h-16 rounded-xl object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">
-                        {planPlace.place?.name}
-                      </h3>
-                      <p className="text-sm text-gray-500 truncate">
-                        {formatCategory(planPlace.place?.category || '')}
-                        {planPlace.place?.neighborhood && ` • ${planPlace.place.neighborhood}`}
-                      </p>
-                      {planPlace.place?.rating && planPlace.place.rating > 0 && (
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <span className="text-yellow-500 text-xs">★</span>
-                          <span className="text-xs text-gray-500">{planPlace.place.rating.toFixed(1)}</span>
+              {plan.places.map((planPlace, index) => {
+                // Calculate walking distance from previous place
+                let walkingTime: string | null = null
+                if (index > 0) {
+                  const prevPlace = plan.places[index - 1].place
+                  const currPlace = planPlace.place
+                  if (prevPlace?.latitude && prevPlace?.longitude && currPlace?.latitude && currPlace?.longitude) {
+                    const distance = calculateDistance(
+                      prevPlace.latitude, prevPlace.longitude,
+                      currPlace.latitude, currPlace.longitude
+                    )
+                    walkingTime = getWalkingTime(distance)
+                  }
+                }
+
+                return (
+                  <div key={planPlace.place?.id || index}>
+                    {/* Walking distance indicator */}
+                    {walkingTime && (
+                      <div className="flex items-center gap-2 ml-8 my-2">
+                        <div className="flex flex-col items-center">
+                          <div className="w-0.5 h-3 bg-gray-200"></div>
+                          <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full">
+                            <span className="text-xs">🚶</span>
+                            <span className="text-xs text-gray-500 font-medium">{walkingTime}</span>
+                          </div>
+                          <div className="w-0.5 h-3 bg-gray-200"></div>
                         </div>
-                      )}
+                      </div>
+                    )}
+
+                    {/* Place card */}
+                    <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
+                      <div className="relative">
+                        <span 
+                          className="absolute -left-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-white text-xs flex items-center justify-center font-semibold"
+                          style={{ backgroundColor: BRAND_BLUE }}
+                        >
+                          {index + 1}
+                        </span>
+                        <img
+                          src={getPhotoUrl(planPlace.place)}
+                          alt={planPlace.place?.name || 'Place'}
+                          className="w-16 h-16 rounded-xl object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 truncate">
+                          {planPlace.place?.name}
+                        </h3>
+                        <p className="text-sm text-gray-500 truncate">
+                          {formatCategory(planPlace.place?.category || '')}
+                          {planPlace.place?.neighborhood && ` • ${planPlace.place.neighborhood}`}
+                        </p>
+                        {planPlace.place?.rating && planPlace.place.rating > 0 && (
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <span className="text-yellow-500 text-xs">★</span>
+                            <span className="text-xs text-gray-500">{planPlace.place.rating.toFixed(1)}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>
@@ -327,13 +402,69 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
           <ActionButtons planId={plan.id} />
         </div>
 
+        {/* CTA Card */}
+        <div className="mt-8 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="text-center">
+            <div className="text-3xl mb-3">🗺️</div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              Want to create your own plans?
+            </h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Download Easy Meets to discover places, find common interests with friends, and plan hangouts in seconds.
+            </p>
+            <a
+              href="https://testflight.apple.com/join/ytNNM6QS"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
+              style={{ backgroundColor: BRAND_BLUE }}
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+              </svg>
+              <span>Download Easy Meets</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Social Links */}
+        <div className="mt-8 flex justify-center gap-4">
+          <a 
+            href="https://www.instagram.com/easymeetsapp" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-12 h-12 bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] rounded-xl flex items-center justify-center text-white hover:opacity-90 transition-opacity"
+          >
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </a>
+          <a 
+            href="https://www.linkedin.com/company/easy-meets" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-12 h-12 bg-[#0077B5] rounded-xl flex items-center justify-center text-white hover:opacity-90 transition-opacity"
+          >
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+            </svg>
+          </a>
+        </div>
+
         {/* Footer */}
-        <footer className="mt-10 text-center">
-          <p className="text-sm text-gray-500 mb-2">
-            Plan your hangouts together
-          </p>
-          <p className="text-xs text-gray-400">
-            Coming soon to the App Store
+        <footer className="mt-8 pb-8 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Image 
+              src="/images/logo.png" 
+              alt="Easy Meets" 
+              width={24} 
+              height={24}
+              className="w-6 h-6"
+            />
+            <span className="font-semibold text-gray-700">Easy Meets</span>
+          </div>
+          <p className="text-sm text-gray-500">
+            Plan hangouts effortlessly with friends
           </p>
         </footer>
       </div>
