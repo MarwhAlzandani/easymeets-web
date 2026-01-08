@@ -192,6 +192,31 @@ function getPhotoUrl(place: PlanPlace['place']): string {
   return place?.admin_photo_url || place?.yelp_photo_url || '/placeholder.svg'
 }
 
+// SVG Logo component - clean and crisp
+function EasyMeetsLogo({ size = 40, className = '' }: { size?: number; className?: string }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 100 100" 
+      className={className}
+      fill="none"
+    >
+      {/* Stylized 'e' with location pin */}
+      <circle cx="50" cy="50" r="45" fill={BRAND_BLUE} opacity="0.1"/>
+      <path 
+        d="M30 50c0-15 12-27 27-27s27 12 27 27c0 20-27 40-27 40S30 70 30 50z" 
+        fill={BRAND_BLUE}
+      />
+      <circle cx="57" cy="47" r="12" fill="white"/>
+      <path 
+        d="M52 42c-4 0-7 3-7 7s3 7 7 7c2 0 4-1 5-2l3 3c-2 2-5 3-8 3-6 0-11-5-11-11s5-11 11-11c3 0 6 1 8 3l-3 3c-1-1-3-2-5-2z" 
+        fill={BRAND_BLUE}
+      />
+    </svg>
+  )
+}
+
 export default async function PlanPage({ params }: { params: { id: string } }) {
   const plan = await getPlan(params.id)
 
@@ -203,37 +228,31 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
   const firstPlace = plan.places[0]?.place
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      {/* Top Download Banner - MORE PROMINENT */}
-      <div style={{ backgroundColor: '#1a1a1a' }} className="text-white py-4 px-4">
+    <main className="min-h-screen" style={{ backgroundColor: '#f0f7ff' }}>
+      {/* Top Download Banner - BRAND BLUE */}
+      <div style={{ backgroundColor: BRAND_BLUE }} className="text-white py-3 px-4">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xl">📲</span>
-            <span className="font-semibold">Get Easy Meets</span>
+            <span className="text-lg">📲</span>
+            <span className="font-medium text-sm">Get Easy Meets</span>
           </div>
           <a 
             href="https://testflight.apple.com/join/ytNNM6QS"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-bold px-5 py-2 rounded-full transition-colors text-sm"
-            style={{ backgroundColor: BRAND_BLUE }}
+            className="font-semibold px-4 py-1.5 rounded-full transition-colors text-sm bg-white"
+            style={{ color: BRAND_BLUE }}
           >
             Download Free
           </a>
         </div>
       </div>
 
-      {/* Header - WHITE BACKGROUND so logo is visible */}
-      <header className="bg-white pt-6 pb-8 px-6 border-b border-gray-100">
+      {/* Header with Logo - WHITE BACKGROUND */}
+      <header className="bg-white py-5 px-6 shadow-sm">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-center gap-3">
-            <Image 
-              src="/images/logo.png" 
-              alt="Easy Meets" 
-              width={56} 
-              height={56}
-              className="w-14 h-14"
-            />
+            <EasyMeetsLogo size={44} />
             <span className="text-2xl font-bold">
               <span style={{ color: BRAND_BLUE }}>Easy</span>
               <span className="text-gray-800"> Meets</span>
@@ -242,156 +261,162 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
         </div>
       </header>
 
-      {/* Plan Card */}
-      <div className="max-w-lg mx-auto px-4 py-6">
-        <div className="bg-white rounded-3xl shadow-lg overflow-hidden">
-          {/* Plan Info */}
-          <div className="p-6 pb-4">
-            <h1 className="text-2xl font-bold text-gray-900 mb-3">{plan.name}</h1>
-            
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex items-center gap-2">
-                {plan.owner.avatar_url ? (
-                  <img 
-                    src={plan.owner.avatar_url} 
-                    alt={plan.owner.first_name}
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <div 
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold"
-                    style={{ backgroundColor: BRAND_BLUE }}
-                  >
-                    {plan.owner.first_name?.[0]?.toUpperCase()}
-                  </div>
-                )}
-                <span className="text-gray-600 text-sm">
-                  {plan.owner.first_name} invited you
-                </span>
+      {/* Blue Background Section */}
+      <div style={{ backgroundColor: BRAND_BLUE }} className="pt-6 pb-12">
+        <div className="max-w-lg mx-auto px-4">
+          {/* Plan Card - overlapping into blue section */}
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+            {/* Plan Info */}
+            <div className="p-6 pb-4">
+              <h1 className="text-2xl font-bold text-gray-900 mb-3">{plan.name}</h1>
+              
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-2">
+                  {plan.owner.avatar_url ? (
+                    <img 
+                      src={plan.owner.avatar_url} 
+                      alt={plan.owner.first_name}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div 
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                      style={{ backgroundColor: BRAND_BLUE }}
+                    >
+                      {plan.owner.first_name?.[0]?.toUpperCase()}
+                    </div>
+                  )}
+                  <span className="text-gray-600 text-sm">
+                    {plan.owner.first_name} invited you
+                  </span>
+                </div>
               </div>
+
+              {/* Date & Time */}
+              {plan.scheduled_date && (
+                <div className="flex items-center gap-2 text-gray-700 mb-3">
+                  <span className="text-lg">📅</span>
+                  <span className="font-medium">
+                    {formatDate(plan.scheduled_date)}
+                    {plan.scheduled_time && ` • ${plan.scheduled_time}`}
+                  </span>
+                </div>
+              )}
+
+              {/* Members going */}
+              {acceptedMembers.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    {acceptedMembers.slice(0, 4).map((member) => (
+                      member.profile.avatar_url ? (
+                        <img 
+                          key={member.user_id}
+                          src={member.profile.avatar_url}
+                          alt={member.profile.first_name}
+                          className="w-7 h-7 rounded-full border-2 border-white object-cover"
+                        />
+                      ) : (
+                        <div 
+                          key={member.user_id}
+                          className="w-7 h-7 rounded-full border-2 border-white bg-gray-300 flex items-center justify-center text-xs font-semibold text-gray-600"
+                        >
+                          {member.profile.first_name?.[0]?.toUpperCase()}
+                        </div>
+                      )
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-500">
+                    {acceptedMembers.length} {acceptedMembers.length === 1 ? 'friend' : 'friends'} going
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Date & Time */}
-            {plan.scheduled_date && (
-              <div className="flex items-center gap-2 text-gray-700 mb-3">
-                <span className="text-lg">📅</span>
-                <span className="font-medium">
-                  {formatDate(plan.scheduled_date)}
-                  {plan.scheduled_time && ` • ${plan.scheduled_time}`}
-                </span>
-              </div>
-            )}
+            {/* Divider */}
+            <div className="border-t border-gray-100 mx-6" />
 
-            {/* Members going */}
-            {acceptedMembers.length > 0 && (
-              <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  {acceptedMembers.slice(0, 4).map((member) => (
-                    member.profile.avatar_url ? (
-                      <img 
-                        key={member.user_id}
-                        src={member.profile.avatar_url}
-                        alt={member.profile.first_name}
-                        className="w-7 h-7 rounded-full border-2 border-white object-cover"
-                      />
-                    ) : (
-                      <div 
-                        key={member.user_id}
-                        className="w-7 h-7 rounded-full border-2 border-white bg-gray-300 flex items-center justify-center text-xs font-semibold text-gray-600"
-                      >
-                        {member.profile.first_name?.[0]?.toUpperCase()}
-                      </div>
-                    )
-                  ))}
-                </div>
-                <span className="text-sm text-gray-500">
-                  {acceptedMembers.length} {acceptedMembers.length === 1 ? 'friend' : 'friends'} going
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Divider */}
-          <div className="border-t border-gray-100 mx-6" />
-
-          {/* Places List with Walking Distance */}
-          <div className="p-6 pt-4">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-              The Plan
-            </h2>
-            
-            <div className="space-y-1">
-              {plan.places.map((planPlace, index) => {
-                let walkingTime: string | null = null
-                if (index > 0) {
-                  const prevPlace = plan.places[index - 1].place
-                  const currPlace = planPlace.place
-                  if (prevPlace?.latitude && prevPlace?.longitude && currPlace?.latitude && currPlace?.longitude) {
-                    const distance = calculateDistance(
-                      prevPlace.latitude, prevPlace.longitude,
-                      currPlace.latitude, currPlace.longitude
-                    )
-                    walkingTime = getWalkingTime(distance)
+            {/* Places List with Walking Distance */}
+            <div className="p-6 pt-4">
+              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                The Plan
+              </h2>
+              
+              <div className="space-y-1">
+                {plan.places.map((planPlace, index) => {
+                  let walkingTime: string | null = null
+                  if (index > 0) {
+                    const prevPlace = plan.places[index - 1].place
+                    const currPlace = planPlace.place
+                    if (prevPlace?.latitude && prevPlace?.longitude && currPlace?.latitude && currPlace?.longitude) {
+                      const distance = calculateDistance(
+                        prevPlace.latitude, prevPlace.longitude,
+                        currPlace.latitude, currPlace.longitude
+                      )
+                      walkingTime = getWalkingTime(distance)
+                    }
                   }
-                }
 
-                return (
-                  <div key={planPlace.place?.id || index}>
-                    {/* Walking distance indicator */}
-                    {walkingTime && (
-                      <div className="flex items-center gap-2 ml-8 my-2">
-                        <div className="flex flex-col items-center">
-                          <div className="w-0.5 h-3 bg-gray-200"></div>
-                          <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full">
-                            <span className="text-xs">🚶</span>
-                            <span className="text-xs text-gray-500 font-medium">{walkingTime}</span>
+                  return (
+                    <div key={planPlace.place?.id || index}>
+                      {/* Walking distance indicator */}
+                      {walkingTime && (
+                        <div className="flex items-center gap-2 ml-8 my-2">
+                          <div className="flex flex-col items-center">
+                            <div className="w-0.5 h-3 bg-gray-200"></div>
+                            <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full">
+                              <span className="text-xs">🚶</span>
+                              <span className="text-xs text-gray-500 font-medium">{walkingTime}</span>
+                            </div>
+                            <div className="w-0.5 h-3 bg-gray-200"></div>
                           </div>
-                          <div className="w-0.5 h-3 bg-gray-200"></div>
+                        </div>
+                      )}
+
+                      {/* Place card */}
+                      <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
+                        <div className="relative">
+                          <span 
+                            className="absolute -left-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-white text-xs flex items-center justify-center font-semibold"
+                            style={{ backgroundColor: BRAND_BLUE }}
+                          >
+                            {index + 1}
+                          </span>
+                          <img
+                            src={getPhotoUrl(planPlace.place)}
+                            alt={planPlace.place?.name || 'Place'}
+                            className="w-16 h-16 rounded-xl object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 truncate">
+                            {planPlace.place?.name}
+                          </h3>
+                          <p className="text-sm text-gray-500 truncate">
+                            {formatCategory(planPlace.place?.category || '')}
+                            {planPlace.place?.neighborhood && ` • ${planPlace.place.neighborhood}`}
+                          </p>
+                          {planPlace.place?.rating && planPlace.place.rating > 0 && (
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <span className="text-yellow-500 text-xs">★</span>
+                              <span className="text-xs text-gray-500">{planPlace.place.rating.toFixed(1)}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
-
-                    {/* Place card */}
-                    <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
-                      <div className="relative">
-                        <span 
-                          className="absolute -left-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-white text-xs flex items-center justify-center font-semibold"
-                          style={{ backgroundColor: BRAND_BLUE }}
-                        >
-                          {index + 1}
-                        </span>
-                        <img
-                          src={getPhotoUrl(planPlace.place)}
-                          alt={planPlace.place?.name || 'Place'}
-                          className="w-16 h-16 rounded-xl object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 truncate">
-                          {planPlace.place?.name}
-                        </h3>
-                        <p className="text-sm text-gray-500 truncate">
-                          {formatCategory(planPlace.place?.category || '')}
-                          {planPlace.place?.neighborhood && ` • ${planPlace.place.neighborhood}`}
-                        </p>
-                        {planPlace.place?.rating && planPlace.place.rating > 0 && (
-                          <div className="flex items-center gap-1 mt-0.5">
-                            <span className="text-yellow-500 text-xs">★</span>
-                            <span className="text-xs text-gray-500">{planPlace.place.rating.toFixed(1)}</span>
-                          </div>
-                        )}
-                      </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
+      {/* Rest of page - Light blue background */}
+      <div className="max-w-lg mx-auto px-4 py-6" style={{ backgroundColor: '#f0f7ff' }}>
         {/* Action Buttons */}
-        <div className="mt-6 space-y-3">
-          {/* Add to Calendar - NOW SHOWS DATE */}
+        <div className="space-y-3">
+          {/* Add to Calendar */}
           {plan.scheduled_date && (
             <CalendarButtons 
               planName={plan.name}
@@ -406,16 +431,10 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
           <ActionButtons planId={plan.id} />
         </div>
 
-        {/* CTA Card - EASY MEETS LOGO instead of map emoji */}
+        {/* CTA Card */}
         <div className="mt-8 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="text-center">
-            <Image 
-              src="/images/logo.png" 
-              alt="Easy Meets" 
-              width={64} 
-              height={64}
-              className="w-16 h-16 mx-auto mb-4"
-            />
+            <EasyMeetsLogo size={56} className="mx-auto mb-4" />
             <h3 className="text-lg font-bold text-gray-900 mb-2">
               Want to create your own plans?
             </h3>
@@ -426,7 +445,7 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
               href="https://testflight.apple.com/join/ytNNM6QS"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
+              className="inline-flex items-center gap-2 text-white font-semibold py-3 px-6 rounded-xl transition-colors hover:opacity-90"
               style={{ backgroundColor: BRAND_BLUE }}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -461,17 +480,11 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
           </a>
         </div>
 
-        {/* Footer - BIGGER LOGO, not stretched */}
+        {/* Footer */}
         <footer className="mt-8 pb-8 text-center">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <Image 
-              src="/images/logo.png" 
-              alt="Easy Meets" 
-              width={40} 
-              height={40}
-              className="w-10 h-10"
-            />
-            <span className="text-xl font-bold">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <EasyMeetsLogo size={32} />
+            <span className="text-lg font-bold">
               <span style={{ color: BRAND_BLUE }}>Easy</span>
               <span className="text-gray-800"> Meets</span>
             </span>
