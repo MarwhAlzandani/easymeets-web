@@ -49,7 +49,7 @@ export default function ResetPassword() {
     if (error) {
       setError(error.message);
     } else {
-      setMessage('Password updated successfully! You can now open the app and log in.');
+      setMessage('Password updated successfully!');
     }
   };
 
@@ -59,15 +59,15 @@ export default function ResetPassword() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#f5f5f5',
+      background: 'linear-gradient(135deg, #3e91fd 0%, #1e5aa8 100%)',
       padding: '20px',
     }}>
       <div style={{
         backgroundColor: 'white',
-        padding: '40px',
-        borderRadius: '16px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-        maxWidth: '400px',
+        padding: '48px 40px',
+        borderRadius: '24px',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+        maxWidth: '420px',
         width: '100%',
       }}>
         
@@ -76,53 +76,72 @@ export default function ResetPassword() {
           display: 'flex', 
           flexDirection: 'column', 
           alignItems: 'center', 
-          marginBottom: '24px' 
+          marginBottom: '32px' 
         }}>
-          <img 
-            src="/images/logo.png" 
-            alt="Easy Meets" 
-            style={{ 
-              width: '60px', 
-              height: 'auto',
-              objectFit: 'contain',
-              marginBottom: '8px' 
-            }}
-          />
-          <p style={{
-            color: '#3e91fd',
-            fontSize: '16px',
-            fontWeight: '600',
-            margin: 0,
+          <div style={{
+            width: '72px',
+            height: '72px',
+            backgroundColor: '#f0f7ff',
+            borderRadius: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '16px',
           }}>
-            Easy Meets
+            <img 
+              src="/images/logo.png" 
+              alt="Easy Meets" 
+              style={{ 
+                width: '48px', 
+                height: 'auto',
+                objectFit: 'contain',
+              }}
+            />
+          </div>
+          <h1 style={{
+            color: '#1a1a1a',
+            fontSize: '24px',
+            fontWeight: '700',
+            margin: '0 0 8px 0',
+          }}>
+            Reset Password
+          </h1>
+          <p style={{
+            color: '#666',
+            fontSize: '14px',
+            margin: 0,
+            textAlign: 'center',
+          }}>
+            Enter your new password below
           </p>
         </div>
 
-        {/* Title */}
-        <h2 style={{
-          fontSize: '22px',
-          marginBottom: '24px',
-          textAlign: 'center',
-          color: '#333',
-          fontWeight: '600',
-        }}>
-          Reset Your Password
-        </h2>
-
         {message ? (
           <div style={{
-            backgroundColor: '#d4edda',
-            color: '#155724',
-            padding: '16px',
-            borderRadius: '8px',
+            backgroundColor: '#f0fdf4',
+            border: '1px solid #86efac',
+            padding: '20px',
+            borderRadius: '12px',
             textAlign: 'center',
           }}>
-            {message}
+            <div style={{ fontSize: '32px', marginBottom: '12px' }}>✓</div>
+            <p style={{ color: '#166534', fontWeight: '600', margin: '0 0 8px 0' }}>
+              {message}
+            </p>
+            <p style={{ color: '#166534', fontSize: '14px', margin: 0 }}>
+              You can now open the app and log in.
+            </p>
           </div>
         ) : (
           <form onSubmit={handleReset}>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontWeight: '500',
+                fontSize: '14px',
+                color: '#333',
+              }}>
                 New Password
               </label>
               <input
@@ -131,19 +150,29 @@ export default function ResetPassword() {
                 onChange={(e) => setPassword(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: '1px solid #ddd',
+                  padding: '14px 16px',
+                  borderRadius: '12px',
+                  border: '2px solid #e5e7eb',
                   fontSize: '16px',
                   boxSizing: 'border-box',
+                  transition: 'border-color 0.2s',
+                  outline: 'none',
                 }}
-                placeholder="Enter new password"
+                onFocus={(e) => e.target.style.borderColor = '#3e91fd'}
+                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                placeholder="••••••••"
                 required
               />
             </div>
 
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontWeight: '500',
+                fontSize: '14px',
+                color: '#333',
+              }}>
                 Confirm Password
               </label>
               <input
@@ -152,24 +181,30 @@ export default function ResetPassword() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: '1px solid #ddd',
+                  padding: '14px 16px',
+                  borderRadius: '12px',
+                  border: '2px solid #e5e7eb',
                   fontSize: '16px',
                   boxSizing: 'border-box',
+                  transition: 'border-color 0.2s',
+                  outline: 'none',
                 }}
-                placeholder="Confirm new password"
+                onFocus={(e) => e.target.style.borderColor = '#3e91fd'}
+                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                placeholder="••••••••"
                 required
               />
             </div>
 
             {error && (
               <div style={{
-                backgroundColor: '#f8d7da',
-                color: '#721c24',
-                padding: '12px',
-                borderRadius: '8px',
-                marginBottom: '16px',
+                backgroundColor: '#fef2f2',
+                border: '1px solid #fecaca',
+                color: '#dc2626',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                marginBottom: '20px',
+                fontSize: '14px',
                 textAlign: 'center',
               }}>
                 {error}
@@ -181,21 +216,42 @@ export default function ResetPassword() {
               disabled={loading}
               style={{
                 width: '100%',
-                padding: '14px',
-                backgroundColor: '#3e91fd',
+                padding: '16px',
+                background: loading ? '#93c5fd' : 'linear-gradient(135deg, #3e91fd 0%, #2563eb 100%)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '10px',
+                borderRadius: '12px',
                 fontSize: '16px',
                 fontWeight: '600',
                 cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.7 : 1,
+                boxShadow: '0 4px 14px rgba(62, 145, 253, 0.4)',
+                transition: 'transform 0.2s, box-shadow 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(62, 145, 253, 0.5)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 14px rgba(62, 145, 253, 0.4)';
               }}
             >
               {loading ? 'Updating...' : 'Reset Password'}
             </button>
           </form>
         )}
+
+        {/* Footer */}
+        <p style={{
+          textAlign: 'center',
+          marginTop: '24px',
+          fontSize: '13px',
+          color: '#999',
+        }}>
+          Easy Meets · Making hangouts happen
+        </p>
       </div>
     </div>
   );
