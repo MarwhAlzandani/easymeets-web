@@ -71,14 +71,20 @@ export default function ResetPassword() {
         maxWidth: '400px',
         width: '100%',
       }}>
-        <h1 style={{
-          color: '#3e91fd',
-          fontSize: '28px',
-          marginBottom: '8px',
-          textAlign: 'center',
-        }}>
-          Easy Meets
-        </h1>
+        <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+  <img 
+    src="/images/logo.png" 
+    alt="Easy Meets" 
+    style={{ width: '80px', height: '80px', marginBottom: '12px' }}
+  />
+  <h1 style={{
+    color: '#3e91fd',
+    fontSize: '28px',
+    margin: 0,
+  }}>
+    Easy Meets
+  </h1>
+</div>
         <h2 style={{
           fontSize: '20px',
           marginBottom: '24px',
