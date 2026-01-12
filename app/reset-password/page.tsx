@@ -79,10 +79,10 @@ export default function ResetPassword() {
           marginBottom: '32px' 
         }}>
           <div style={{
-            width: '72px',
-            height: '72px',
+            width: '90px',
+            height: '90px',
             backgroundColor: '#f0f7ff',
-            borderRadius: '16px',
+            borderRadius: '20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -92,7 +92,7 @@ export default function ResetPassword() {
               src="/images/logo.png" 
               alt="Easy Meets" 
               style={{ 
-                width: '48px', 
+                width: '64px', 
                 height: 'auto',
                 objectFit: 'contain',
               }}
