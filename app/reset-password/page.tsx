@@ -16,7 +16,6 @@ export default function ResetPassword() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Supabase will automatically pick up the token from the URL
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
         // User is ready to reset password
@@ -71,25 +70,41 @@ export default function ResetPassword() {
         maxWidth: '400px',
         width: '100%',
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-  <img 
-    src="/images/logo.png" 
-    alt="Easy Meets" 
-    style={{ width: '80px', height: '80px', marginBottom: '12px' }}
-  />
-  <h1 style={{
-    color: '#3e91fd',
-    fontSize: '28px',
-    margin: 0,
-  }}>
-    Easy Meets
-  </h1>
-</div>
+        
+        {/* Logo and Brand */}
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          marginBottom: '24px' 
+        }}>
+          <img 
+            src="/images/logo.png" 
+            alt="Easy Meets" 
+            style={{ 
+              width: '60px', 
+              height: 'auto',
+              objectFit: 'contain',
+              marginBottom: '8px' 
+            }}
+          />
+          <p style={{
+            color: '#3e91fd',
+            fontSize: '16px',
+            fontWeight: '600',
+            margin: 0,
+          }}>
+            Easy Meets
+          </p>
+        </div>
+
+        {/* Title */}
         <h2 style={{
-          fontSize: '20px',
+          fontSize: '22px',
           marginBottom: '24px',
           textAlign: 'center',
           color: '#333',
+          fontWeight: '600',
         }}>
           Reset Your Password
         </h2>
