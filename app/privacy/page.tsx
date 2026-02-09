@@ -31,7 +31,7 @@ export default function PrivacyPage() {
       {/* Content */}
       <main className="max-w-4xl mx-auto px-6 md:px-12 py-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Privacy Policy</h1>
-        <p className="text-gray-500 mb-8">Last updated: January 2025</p>
+        <p className="text-gray-500 mb-8">Last updated: February 2026</p>
 
         <div className="prose prose-gray max-w-none">
           <section className="mb-8">
@@ -55,7 +55,7 @@ export default function PrivacyPage() {
               <li>Name and username</li>
               <li>Email address</li>
               <li>Profile photo (optional)</li>
-              <li>Authentication information (if using Apple Sign-In or email)</li>
+              <li>Authentication information (if using Google Sign-In or email)</li>
             </ul>
 
             <h3 className="text-xl font-medium text-gray-900 mb-3">Usage Information</h3>
@@ -98,10 +98,12 @@ export default function PrivacyPage() {
               We use Supabase to store and manage user data, including account information, likes, and plans. Supabase provides secure database storage and authentication services.
             </p>
 
-            <h3 className="text-xl font-medium text-gray-900 mb-3">Yelp API</h3>
-            <p className="text-gray-600">
-              We use the Yelp API to provide information about places, including photos, ratings, and business details. Yelp&apos;s privacy policy governs their collection and use of data.
-            </p>
+            <h3 className="text-xl font-medium text-gray-900 mb-3">Google Sign-In</h3>
+<p className="text-gray-600">
+  We offer Google Sign-In as an authentication option. When you sign in with Google, we receive your name, email address, and profile photo. Google&apos;s privacy policy governs their collection and use of data.
+</p>
+
+           
           </section>
 
           <section className="mb-8">
@@ -129,12 +131,12 @@ export default function PrivacyPage() {
             <ul className="list-disc list-inside text-gray-600 space-y-2">
               <li>Access the personal information we hold about you</li>
               <li>Request correction of inaccurate information</li>
-              <li>Request deletion of your account and data</li>
+              <li>Request deletion of your account and all associated data through Settings → Delete Account in the app</li>
               <li>Opt out of marketing communications</li>
               <li>Disable location services</li>
             </ul>
             <p className="text-gray-600 mt-4">
-              To exercise these rights, please contact us at easymeetsnyc@gmail.com.
+              To exercise these rights, please contact us at hello@easymeets-app.com.
             </p>
           </section>
 
