@@ -160,7 +160,7 @@ export default function PrivacyPage() {
               If you have any questions about this Privacy Policy, please contact us:
             </p>
             <ul className="text-gray-600 space-y-2">
-              <li><strong>Email:</strong> easymeetsnyc@gmail.com</li>
+              <li><strong>Email:</strong> hello@easymeets-app.com</li>
               <li><strong>Website:</strong> easymeets-app.com</li>
             </ul>
           </section>
