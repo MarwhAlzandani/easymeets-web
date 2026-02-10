@@ -19,7 +19,7 @@ export default function TermsPage() {
 
       <main className="max-w-4xl mx-auto px-6 md:px-12 py-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Terms of Service</h1>
-        <p className="text-gray-500 mb-8">Last updated: January 2025</p>
+        <p className="text-gray-500 mb-8">Last updated: February 2026</p>
 
         <div className="prose prose-gray max-w-none space-y-8">
           <section>
@@ -49,7 +49,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">6. Third-Party Content</h2>
-            <p className="text-gray-600">The Service displays content from third parties including Yelp. We do not control or endorse third-party content. Verify place information directly before visiting.</p>
+            <p className="text-gray-600">The Service displays content from third parties. We do not control or endorse third-party content. Verify place information directly before visiting.</p>
           </section>
 
           <section>
@@ -69,7 +69,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">10. Termination</h2>
-            <p className="text-gray-600">We may terminate your account for any reason. You may delete your account through app settings or by contacting easymeetsnyc@gmail.com.</p>
+            <p className="text-gray-600">We may terminate your account for any reason. You may delete your account at any time through Settings → Delete Account in the app, or by contacting hello@easymeets-app.com.</p>
           </section>
 
           <section>
@@ -79,7 +79,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">12. Contact</h2>
-            <p className="text-gray-600">Questions? Email us at easymeetsnyc@gmail.com</p>
+            <p className="text-gray-600">Questions? Email us at hello@easymeets-app.com</p>
           </section>
         </div>
       </main>
